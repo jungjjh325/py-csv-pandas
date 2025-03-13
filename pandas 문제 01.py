@@ -163,6 +163,32 @@ class student_infomations():
             print('오류: 학생 데이터 파일이 존재하지 않습니다.')
             print()
 
+    def list_student(self):
+        pretty = PrettyTable()
+
+        print('[학생목록]')
+        pretty.field_names = ['순번', '학번', '이름', '수학 점수', '영어 점수', '과학 점수', '국어 점수']
+
+        try:
+            with open('students.csv', 'r', encoding='utf-8') as student_files:
+                student_datas = csv.reader(student_files)
+
+                for i, studnet_info in enumerate(student_datas, start=1):
+                    pretty.add_row([
+                        i,
+                        studnet_info[0],
+                        studnet_info[1],
+                        studnet_info[2],
+                        studnet_info[3],
+                        studnet_info[4],
+                        studnet_info[5]
+                    ])
+                print(pretty)
+    
+        except FileNotFoundError:
+            print('오류: 파일이 존재하지 않습니다.')
+            print()
+
 class students_grade_manager():
     def students_avg(self):
         sum_subject = add()
@@ -187,8 +213,8 @@ def main_menu():
             student_info.add_student()
         elif user_choice == 2:
             student_info.remove_student()
-        #elif user_choice == 3:
-
+        elif user_choice == 3:
+            student_info.list_student()
         #elif user_choice == 4:
 
         #elif user_choice == 5:
