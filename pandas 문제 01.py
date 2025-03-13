@@ -50,13 +50,10 @@ class student_infomations():
 
     def ensure_file(self):
         if not os.path.exists('students.csv'):
-            print('if')
             self.create_header()
         elif os.path.getsize('students.csv') == 0:
-            print('elif')
             self.create_header()
         else:
-            print('else')
             with open('students.csv', 'r', encoding='utf-8') as student_csv_files:
                 first_line = student_csv_files.readline()
 
@@ -184,7 +181,44 @@ class student_infomations():
                         studnet_info[5]
                     ])
                 print(pretty)
-    
+
+        except FileNotFoundError:
+            print('오류: 파일이 존재하지 않습니다.')
+            print()
+
+    def search_student(self):
+        student_number = valid_input('학생 학번 입력: ', isint=True)
+
+        if not isinstance(student_number, int):
+            print('오류: 학생의 학번에는 숫자만 입력할 수 있습니다.')
+            print()
+
+        student_name = valid_input('학생 이름 입력: ')
+
+        if not re.fullmatch(r'[a-zA-Z기-힣]+', student_name):
+            print('오류: 학생의 이름에는 한,영만 입력할 수 있습니다.')
+            print()
+
+        try:
+            with open('students.csv', 'r', encoding='utf-8') as student_files:
+                student_datas = csv.DictReader(student_files)
+
+                pretty = PrettyTable()
+                pretty.field_names = ['학번', '이름', '수학 점수', '영어 점수', '과학 점수', '국어 점수']
+
+                for student_info in student_datas:
+                    if student_number == int(student_info['student_id']) and student_name == student_info['student_name']:
+                        print(1)
+                        pretty.add_row([
+                            student_info['student_id'],
+                            student_info['student_name'],
+                            student_info['math_score'],
+                            student_info['english_score'],
+                            student_info['science_score'],
+                            student_info['korean_score']
+                        ])
+
+                print(pretty)
         except FileNotFoundError:
             print('오류: 파일이 존재하지 않습니다.')
             print()
@@ -200,7 +234,7 @@ def main_menu():
         print("1. 학생 추가")
         print("2. 학생 삭제")
         print("3. 학생 목록")
-        print("4. 학생 정보")
+        print("4. 학생 검색")
         print("5. 학생 평균")
         print("6. 학생 등급")
         print("7. 전체 학생 평균")
@@ -215,8 +249,8 @@ def main_menu():
             student_info.remove_student()
         elif user_choice == 3:
             student_info.list_student()
-        #elif user_choice == 4:
-
+        elif user_choice == 4:
+            student_info.search_student()
         #elif user_choice == 5:
 
         #elif user_choice == 6:
