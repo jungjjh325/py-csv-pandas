@@ -1,8 +1,6 @@
 import re
 import os
 import csv
-from math import trunc
-
 import pandas as pd
 from prettytable import PrettyTable
 
@@ -163,27 +161,27 @@ class student_infomations():
             print()
 
     def list_student(self):
-        pretty = PrettyTable()
-
         print('[학생목록]')
-        pretty.field_names = ['순번', '학번', '이름', '수학 점수', '영어 점수', '과학 점수', '국어 점수']
 
         try:
-            with open('students.csv', 'r', encoding='utf-8') as student_files:
-                student_datas = csv.reader(student_files)
-                next(student_datas)
+            pandas_csv = pd.read_csv('students.csv', encoding='utf-8')
 
-                for i, studnet_info in enumerate(student_datas, start=1):
-                    pretty.add_row([
-                        i,
-                        studnet_info[0],
-                        studnet_info[1],
-                        studnet_info[2],
-                        studnet_info[3],
-                        studnet_info[4],
-                        studnet_info[5]
-                    ])
-                print(pretty)
+            pretty = PrettyTable()
+            pretty.field_names = ['순번', '학번', '이름', '수학 점수', '영어 점수', '과학 점수', '국어 점수']
+
+            for index, row in pandas_csv.iterrows():
+                pretty.add_row([
+                    index + 1,
+                    row['student_id'],
+                    row['student_name'],
+                    row['math_score'],
+                    row['english_score'],
+                    row['science_score'],
+                    row['korean_score']
+                ])
+
+            print(pretty)
+            print()
 
         except FileNotFoundError:
             print('오류: 파일이 존재하지 않습니다.')
