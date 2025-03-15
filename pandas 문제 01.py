@@ -1,6 +1,8 @@
 import re
 import os
 import csv
+from math import trunc
+
 import pandas as pd
 from prettytable import PrettyTable
 
@@ -169,6 +171,7 @@ class student_infomations():
         try:
             with open('students.csv', 'r', encoding='utf-8') as student_files:
                 student_datas = csv.reader(student_files)
+                next(student_datas)
 
                 for i, studnet_info in enumerate(student_datas, start=1):
                     pretty.add_row([
@@ -208,7 +211,7 @@ class student_infomations():
 
                 for student_info in student_datas:
                     if student_number == int(student_info['student_id']) and student_name == student_info['student_name']:
-                        print(1)
+
                         pretty.add_row([
                             student_info['student_id'],
                             student_info['student_name'],
@@ -219,16 +222,75 @@ class student_infomations():
                         ])
 
                 print(pretty)
+                print()
+
         except FileNotFoundError:
             print('오류: 파일이 존재하지 않습니다.')
             print()
 
 class students_grade_manager():
     def students_avg(self):
-        sum_subject = add()
+        student_number = valid_input('학번 입력: ', isint=True)
+
+        if not isinstance(student_number, int):
+            print('오류: 학생의 학번에는 숫자만 입력할 수 있습니다.')
+            print()
+
+            return
+
+        student_name = valid_input('이름 입력: ')
+
+        if not re.fullmatch(r'[a-zA-Z기-힣]+', student_name):
+            print('오류 학생의 이름에는 한/영만 입력할 수 있습니다.')
+            print()
+
+            return
+
+        try:
+            with open('students.csv', 'r', encoding='utf-8') as student_files:
+                student_datas = csv.DictReader(student_files)
+                next(student_datas)
+
+                for student_info in student_datas:
+                    if student_number != int(student_info['student_id']) or student_name != student_info['student_name']:
+                        print('오류: 학번과 이름이 일치하는 학생이 존재하지 않습니다.')
+                        print()
+
+                    all_score = sum([
+                        int(student_info['math_score']),
+                        int(student_info['english_score']),
+                        int(student_info['science_score']),
+                        int(student_info['korean_score'])
+                    ])
+
+                    avg = round(all_score / 4, 2)
+
+                    pretty = PrettyTable()
+                    pretty.field_names = ['student_id', 'student_name', 'math_score', 'english_score', 'science_score', 'korean_score', 'avg_score']
+
+                    pretty.add_row([
+                        student_info['student_id'],
+                        student_info['student_name'],
+                        student_info['math_score'],
+                        student_info['english_score'],
+                        student_info['science_score'],
+                        student_info['korean_score'],
+                        avg
+                    ])
+
+                    print(pretty)
+                    print()
+
+        except FileNotFoundError:
+            print('오류: 파일이 존재하지 않습니다.')
+            print()
+
+    #def student_grade(self):
+
 
 def main_menu():
     student_info = student_infomations()
+    student_status = students_grade_manager()
 
     while True:
         print("1. 학생 추가")
@@ -251,10 +313,10 @@ def main_menu():
             student_info.list_student()
         elif user_choice == 4:
             student_info.search_student()
-        #elif user_choice == 5:
-
+        elif user_choice == 5:
+            student_status.students_avg()
         #elif user_choice == 6:
-
+            #student_status.
         #elif user_choice == 7:
 
         elif user_choice == 8:
